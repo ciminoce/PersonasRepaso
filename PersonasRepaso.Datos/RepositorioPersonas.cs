@@ -50,12 +50,17 @@ namespace PersonasRepaso.Datos
 
         public void Agregar(Persona persona)
         {
+            AgregarRegistroAlArchivo(persona);
+
+            listaPersonas.Add(persona);
+        }
+
+        private void AgregarRegistroAlArchivo(Persona persona)
+        {
             StreamWriter escritor = new StreamWriter(_archivo, true);
             var linea = ConstruirLinea(persona);
             escritor.WriteLine(linea);
             escritor.Close();
-
-            listaPersonas.Add(persona);
         }
 
         private string ConstruirLinea(Persona persona)
@@ -67,6 +72,14 @@ namespace PersonasRepaso.Datos
 
         public void Borrar(Persona persona)
         {
+            BorrarRegistroDelArchivo(persona);
+
+
+            listaPersonas.Remove(persona);
+        }
+
+        private void BorrarRegistroDelArchivo(Persona persona)
+        {
             /*Abro el archivo de lectura*/
             StreamReader lector = new StreamReader(_archivo);
             /*Abro el archivo de escritura*/
@@ -74,9 +87,9 @@ namespace PersonasRepaso.Datos
             /*Recorro todo el archivo que tengo que leer*/
             while (!lector.EndOfStream)
             {
-                var linea = lector.ReadLine();//Leo una linea
-                Persona personaEnArchivo = ConstruirPersona(linea);//La convierto a Persona
-                if (personaEnArchivo.DNI != persona.DNI)//Comparo los DNI
+                var linea = lector.ReadLine(); //Leo una linea
+                Persona personaEnArchivo = ConstruirPersona(linea); //La convierto a Persona
+                if (personaEnArchivo.DNI != persona.DNI) //Comparo los DNI
                 {
                     /*Si son distintos guardo los datos de la persona
                      del archivo de lectura en el archivo de escritura
@@ -85,15 +98,12 @@ namespace PersonasRepaso.Datos
                     se continua con la lectura y grabación*/
                     escritor.WriteLine(linea);
                 }
-
             }
+
             lector.Close();
             escritor.Close();
             File.Delete(_archivo);
             File.Move(_archivoBak, _archivo);
-
-
-            listaPersonas.Remove(persona);
         }
 
         public void Editar(Persona personaModificada)
